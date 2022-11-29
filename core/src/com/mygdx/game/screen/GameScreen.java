@@ -10,6 +10,8 @@ import com.mygdx.game.controller.SnakeController;
 import com.mygdx.game.model.World;
 import com.mygdx.game.view.Renderer;
 
+import java.security.Key;
+
 
 public class GameScreen implements Screen, InputProcessor {
 
@@ -17,7 +19,7 @@ public class GameScreen implements Screen, InputProcessor {
 	private static final float CAM_HEIGHT = Gdx.graphics.getHeight();
 	
 	private enum GameState {
-		GAME_READY, GAME_RUNNING, GAME_PAUSED, GAME_OVER;
+		GAME_READY, GAME_RUNNING, GAME_OVER;
 	}
 	
 	private GameState STATE;
@@ -25,9 +27,6 @@ public class GameScreen implements Screen, InputProcessor {
 	private SnakeController snakeController;
 	private BaitController baitController;
 	private World world;
-	
-	private float currentTime = 0;
-	private boolean renderIt = false;
 
 	@Override
 	public void show() {
@@ -55,27 +54,15 @@ public class GameScreen implements Screen, InputProcessor {
 			
 			baitController.update();
 			if(snakeController.update(delta)) {
-				STATE = GameState.GAME_OVER; // game over
-				currentTime = System.nanoTime();
+				STATE = GameState.GAME_OVER;
 			}
-			renderer.render();
-			break;
-		case GAME_PAUSED:
-			Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 			renderer.render();
 			break;
 		case GAME_OVER:
 			Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-			if((System.nanoTime() - currentTime)/1000 > 500000) {
-				currentTime = System.nanoTime();
-				renderIt = !renderIt;
-			}
-			if(renderIt)
-				renderer.render();
-			else
-				renderer.renderFail();
+
+			renderer.renderFail();
 			break;
 		}
 	}
@@ -118,26 +105,34 @@ public class GameScreen implements Screen, InputProcessor {
 	
 	@Override
 	public boolean keyDown(int keycode) {
-		if(keycode == Keys.W || keycode == Keys.UP)
+		if(STATE == GameState.GAME_READY)
+			STATE = GameState.GAME_RUNNING;
+		else if(STATE == GameState.GAME_OVER) {
+			reset();
+		}
+
+		if(keycode == Keys.UP)
 			snakeController.upPressed();
-		if(keycode == Keys.S || keycode == Keys.DOWN)
+		if(keycode == Keys.DOWN)
 			snakeController.downPressed();
-		if(keycode == Keys.A || keycode == Keys.LEFT)
+		if(keycode == Keys.LEFT)
 			snakeController.leftPressed();
-		if(keycode == Keys.D || keycode == Keys.RIGHT)
+		if(keycode == Keys.RIGHT)
 			snakeController.rightPressed();
+		if(keycode == Keys.ESCAPE || keycode == Keys.ENTER)
+			Gdx.app.exit();
 		return true;
 	}
 
 	@Override
 	public boolean keyUp(int keycode) {
-		if(keycode == Keys.W || keycode == Keys.UP)
+		if(keycode == Keys.UP)
 			snakeController.upReleased();
-		if(keycode == Keys.S || keycode == Keys.DOWN)
+		if(keycode == Keys.DOWN)
 			snakeController.downReleased();
-		if(keycode == Keys.A || keycode == Keys.LEFT)
+		if(keycode == Keys.LEFT)
 			snakeController.leftReleased();
-		if(keycode == Keys.D || keycode == Keys.RIGHT)
+		if(keycode == Keys.RIGHT)
 			snakeController.rightReleased();
 		return true;
 	}
@@ -156,13 +151,6 @@ public class GameScreen implements Screen, InputProcessor {
 
 	@Override
 	public boolean touchUp(int x, int y, int pointer, int button) {
-		if(STATE == GameState.GAME_PAUSED || STATE == GameState.GAME_READY)
-			STATE = GameState.GAME_RUNNING;
-		else if(STATE == GameState.GAME_OVER) {
-			reset();
-		} else 			
-			STATE = GameState.GAME_PAUSED;
-			
 		return false;
 	}
 

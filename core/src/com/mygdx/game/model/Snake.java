@@ -11,7 +11,7 @@ public class Snake {
 	private static float growth;
 	private static boolean movingX = false;
 	private static boolean grows = false;
-	private static int score = 0;
+	private int score = 0;
 	
 	public enum Dir { UP, DOWN, LEFT, RIGHT };
 	

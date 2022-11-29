@@ -11,7 +11,6 @@ import com.mygdx.game.model.World;
 public class BaitController {
 	
 	private float worldWidth, worldHeight;
-	private float collisionTime;
 	private Bait bait;
 	private LinkedList<Rectangle> snakeRects;
 	private boolean spawnIt = true;
@@ -29,15 +28,12 @@ public class BaitController {
 		} else if(spawnIt) {
 			spawnTry();
 		} else {
-			if((System.nanoTime() - collisionTime)/1000 > (float)2000000 ) {
-				spawnIt = true;
-			}
+			spawnIt = true;
 		}
 	}
 	
 	private void checkCollision() {
 		if(snakeRects.peekLast().overlaps(bait)) {
-			collisionTime = System.nanoTime();
 			bait.setSpawned(false);
 		}
 	}
