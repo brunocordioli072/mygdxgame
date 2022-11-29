@@ -170,14 +170,5 @@ public class GameScreen implements Screen, InputProcessor {
 		return false;
 	}
 
-	public boolean touchMoved(int x, int y) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
 

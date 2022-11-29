@@ -43,6 +43,8 @@ public class BaitController {
 		bait.setX(rn.nextInt((int)(worldWidth-bait.getWidth())));
 		bait.setY(rn.nextInt((int)(worldHeight-bait.getHeight())));
 		Iterator<Rectangle> it = snakeRects.iterator();
+
+		// check if snake overlaps on bait spawn
 		while(it.hasNext()) {
 			if(it.next().overlaps(bait))
 				return;
